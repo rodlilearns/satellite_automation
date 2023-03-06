@@ -5,8 +5,8 @@ Some generic configuration tasks for Red Hat Satellite include:
 
 - Implement Role Based Access Control for the Satellite.  
 - Configure digital certificates.  
-- Configure organisations.  
+- Configure organizations.  
 - Configure locations.  
+- Configure and synchronize content.  
 - Configure Life-cycle environments.  
-- Configure and synchronise content.  
 - Implement SCAP content that aligns with a security profile.  
