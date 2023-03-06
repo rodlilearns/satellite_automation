@@ -1,0 +1,10 @@
+---
+# tasks file for subscription_manifest
+- name: "Upload the subscription manifest"
+  redhat.satellite.subscription_manifest:
+    username: "{{ satellite_username }}"
+    password: "{{ satellite_password }}"
+    server_url: "{{ satellite_server_url }}"
+    organization: "Default Organization"
+    state: present
+    manifest_path: "{{ manifest_path }}"
