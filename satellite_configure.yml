@@ -1,0 +1,49 @@
+---
+- name: Configure Red Hat Satellite
+  hosts: satellite_server
+  vars_files:
+    - hostvars/vault.yml
+    - hostvars/satellite_vars.yml
+  roles:
+    - subscription_manifest
+    - role: redhat.satellite.organizations
+      vars: 
+        satellite_organizations: "{{ satellite_organizations }}"
+    - locations
+    - role: redhat.satellite.repositories
+      vars:
+        satellite_organization: "rodli"
+        satellite_products:
+          - name: Red Hat Enterprise Linux 8 for x86_64
+            repository_sets:
+              - name: Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
+                basearch: x86_64
+                releasever: 8
+              - name: Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
+                basearch: x86_64
+                releasever: 8
+          - name: Red Hat Enterprise Linux 9 for x86_64
+            repository_sets:
+              - name: Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
+                basearch: x86_64
+                releasever: 9
+              - name: Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
+                basearch: x86_64
+                releasever: 9
+              - name: Red Hat Satellite Client 6 for x86_64 (RPMs)
+                basearch: x86_64
+                releaseever: 9
+    - role: redhat.satellite.sync_plans
+      vars:
+        satellite_organization: "rodli"
+        satellite_sync_plans:
+          - name: Daily Sync
+            interval: daily
+            sync_date: 2020-11-08 00:00:00 UTC
+            products:
+              - Red Hat Enterprise Linux 8 for x86_64
+              - Red Hat Enterprise Linux 9 for x86_64
+    - role: redhat.satellite.lifecycle_environments
+      vars:
+        satellite_organization: "rodli"
+        satellite_lifecycle_environments: "{{ satellite_lifecycle_environments }}"
