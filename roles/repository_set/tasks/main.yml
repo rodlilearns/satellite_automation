@@ -1,0 +1,40 @@
+---
+# tasks file for roles/repository_set
+- name: Enable RHEL 8 RPMs repositories with label
+  redhat.satellite.repository_set:
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
+    organization: "rodli"
+    label: "{{ item }}"
+    repositories:
+      - releasever: "8.0"
+        basearch: "x86_64"
+  loop: 
+    - rhel-8-for-x86_64-baseos-rpms
+    - rhel-8-for-x86_64-appstream-rpms
+
+- name: Enable RHEL 9 RPMs respositories with label
+  redhat.satellite.repository_set:
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
+    organization: "rodli"
+    label: "{{ item }}"
+    repositories:
+      - releasever: "9.0"
+        basearch: "x86_64"
+    loop:
+      - rhel9-for-x86_64-baseos-rpms
+      - rhel9-for-x86_64-appstream-rpms
+
+- name: Enable Red Hat Satellite Client 6 for rhel 9
+  redhat.satellite.repository_set:
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
+    organization: "rodli"
+    label:
+  loop:
+    - satellite-tools-6.8-for-rhel-8-x86_64-rpms
+    - satellite-client-6-for-rhel-9-x86_64-rpms
