@@ -4,11 +4,30 @@
   vars_files:
     - hostvars/vault.yml
     - hostvars/satellite_vars.yml
+  pre_tasks:
+    - name: "Search for possible repository sets by label"
+      redhat.satellite.resource_info:
+        username: "{{ satellite_username }}"
+        password: "{{ satellite_password }}"
+        server_url: "{{ satellite_server_url }}"
+        organization: "rodli"
+        resource: repository_sets
+        search: label=rhel-7-server-rhv-4.2-manager-rpms
+        register: data
+    - name: "Output found repository sets, see the contentUrl section for possible repository substitutions"
+      debug:
+        var: data
   roles:
-    - subscription_manifest
+    # - subscription_manifest
     - role: redhat.satellite.organizations
       vars: 
-        satellite_organizations: "{{ satellite_organizations }}"
+        satellite_organizations:
+          - name: rodli
+            label: rodli
+            state: present
+          - name: operations
+            label: operations
+            state: present
     - locations
     - role: redhat.satellite.repositories
       vars:
@@ -17,22 +36,17 @@
           - name: Red Hat Enterprise Linux 8 for x86_64
             repository_sets:
               - name: Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
-                basearch: x86_64
                 releasever: 8
               - name: Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
-                basearch: x86_64
                 releasever: 8
           - name: Red Hat Enterprise Linux 9 for x86_64
             repository_sets:
               - name: Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
-                basearch: x86_64
                 releasever: 9
               - name: Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
-                basearch: x86_64
                 releasever: 9
               - name: Red Hat Satellite Client 6 for x86_64 (RPMs)
                 basearch: x86_64
-                releaseever: 9
     - role: redhat.satellite.sync_plans
       vars:
         satellite_organization: "rodli"
