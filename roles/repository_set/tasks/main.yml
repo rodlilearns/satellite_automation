@@ -9,6 +9,7 @@
     label: "{{ item }}"
     repositories:
       - releasever: "8.0"
+    state: enabled
   loop:
     - rhel-8-for-x86_64-baseos-rpms
     - rhel-8-for-x86_64-appstream-rpms
@@ -22,7 +23,30 @@
     label: "{{ item }}"
     repositories:
       - releasever: "9.0"
+    state: enabled
   loop:
     - rhel-9-for-x86_64-baseos-rpms
     - rhel-9-for-x86_64-appstream-rpms
-    - satellite-client-6-for-rhel-9-x86_64-rpms
+
+- name: Enable Satellite Client 6 for RHEL 9 RPMs
+  redhat.satellite.repository_set:
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
+    organization: "rodli"
+    label: satellite-client-6-for-rhel-9-x86_64-rpms
+    repositories: []
+    all_repositories: true
+
+# - name: "Search for possible repository sets by label"
+#   redhat.satellite.resource_info:
+#     username: "{{ satellite.satellite_username }}"
+#     password: "{{ satellite.satellite_password }}"
+#     server_url: "{{ satellite.satellite_server_url }}"
+#     organization: "rodli"
+#     resource: repository_sets
+#     search: label=satellite-client-6-for-rhel-9-x86_64-rpms
+#   register: data
+# - name: "Output found repository sets, see the contentUrl section for possible repository substitutions"
+#   debug:
+#     var: data
