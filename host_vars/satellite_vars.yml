@@ -1,0 +1,30 @@
+---
+satellite:
+  number_of_content_view_versions_to_keep: 10
+  manifest_path: /tmp/manifest.zip
+  satellite_server_url: "{{ vault_satellite_server_url }}"
+  satellite_username: "{{ vault_satellite_username }}"
+  satellite_password: "{{ vault_satellite_password }}"
+  satellite_organizations:
+    - name: rodli
+      label: rodli
+      state: present
+    - name: operations
+      label: operations
+      state: absent
+    - name: finance
+      label: finance
+      state: absent
+  satellite_lifecycle_environments:
+    - name: "Dev"
+      prior: "Library"
+    - name: "Test"
+      prior: "Dev"
+    - name: "Prod"
+      prior: "Test"
+  satellite_activation_keys:
+    - name: "Basic Activation Key"
+      description: "Basic description"
+  rhel_products:
+    labels:
+      - rhel-8-for-x86_64-baseos-rpms
