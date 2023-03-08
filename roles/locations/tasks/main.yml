@@ -2,9 +2,9 @@
 # tasks file for locations
 - name: "Create CBR Location"
   redhat.satellite.location:
-    username: "{{ satellite_username }}"
-    password: "{{ satellite_password }}"
-    server_url: "{{ satellite_server_url }}"
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
     name: "cbr"
     organizations:
       - "rodli"
