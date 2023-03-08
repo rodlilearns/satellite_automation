@@ -2,25 +2,16 @@
 - name: Configure Red Hat Satellite
   hosts: satellite_server
   vars_files:
-    - hostvars/vault.yml
-    - hostvars/satellite_vars.yml
-  pre_tasks:
-    - name: "Search for possible repository sets by label"
-      redhat.satellite.resource_info:
-        username: "{{ satellite_username }}"
-        password: "{{ satellite_password }}"
-        server_url: "{{ satellite_server_url }}"
-        organization: "rodli"
-        resource: repository_sets
-        search: label=rhel-7-server-rhv-4.2-manager-rpms
-        register: data
-    - name: "Output found repository sets, see the contentUrl section for possible repository substitutions"
-      debug:
-        var: data
+    - host_vars/vault.yml
+    - host_vars/satellite_vars.yml
   roles:
     # - subscription_manifest
+
     - role: redhat.satellite.organizations
-      vars: 
+      vars:
+        satellite_server_url: "{{ satellite.satellite_server_url }}"
+        satellite_username: "{{ satellite.satellite_username }}"
+        satellite_password: "{{ satellite.satellite_password }}"
         satellite_organizations:
           - name: rodli
             label: rodli
@@ -28,36 +19,39 @@
           - name: operations
             label: operations
             state: present
+
     - locations
-    - role: redhat.satellite.repositories
-      vars:
-        satellite_organization: "rodli"
-        satellite_products:
-          - name: Red Hat Enterprise Linux 8 for x86_64
-            repository_sets:
-              - name: Red Hat Enterprise Linux 8 for x86_64 - BaseOS (RPMs)
-                releasever: 8
-              - name: Red Hat Enterprise Linux 8 for x86_64 - AppStream (RPMs)
-                releasever: 8
-          - name: Red Hat Enterprise Linux 9 for x86_64
-            repository_sets:
-              - name: Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
-                releasever: 9
-              - name: Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
-                releasever: 9
-              - name: Red Hat Satellite Client 6 for x86_64 (RPMs)
-                basearch: x86_64
-    - role: redhat.satellite.sync_plans
-      vars:
-        satellite_organization: "rodli"
-        satellite_sync_plans:
-          - name: Daily Sync
-            interval: daily
-            sync_date: 2020-11-08 00:00:00 UTC
-            products:
-              - Red Hat Enterprise Linux 8 for x86_64
-              - Red Hat Enterprise Linux 9 for x86_64
+
+    - repository_set
+
+# Note: I've had the following repository_sync role fail once, and when I ran the playbook again, it succeeded.
+# The error message is below.
+# msg: 'Task Synchronize synchronize; repository ''Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs 9.0''; product ''Red Hat Enterprise Linux for x86_64''; organization ''rodli''; ...(6543cf74-caa1-49cf-8ea1-20fc0d3a9c4d) did not succeed. Task information: [''A sub task failed'']'
+    - repository_sync
+
     - role: redhat.satellite.lifecycle_environments
       vars:
+        satellite_username: "{{ satellite.satellite_username }}"
+        satellite_password: "{{ satellite.satellite_password }}"
+        satellite_server_url: "{{ satellite.satellite_server_url }}"
         satellite_organization: "rodli"
-        satellite_lifecycle_environments: "{{ satellite_lifecycle_environments }}"
+        satellite_lifecycle_environments: "{{ satellite.satellite_lifecycle_environments }}"
+
+    - content_views
+
+    - role: redhat.satellite.content_view_publish
+      vars:
+        satellite_server_url: "{{ satellite.satellite_server_url }}"
+        satellite_username: "{{ satellite.satellite_username }}"
+        satellite_password: "{{ satellite.satellite_password }}"
+        satellite_organization: "rodli"
+        satellite_content_views:
+          - RHEL9_Base_CV
+
+    - role: redhat.satellite.content_view_version_cleanup
+      vars:
+        satellite_server_url: "{{ satellite.satellite_server_url }}"
+        satellite_username: "{{ satellite.satellite_username }}"
+        satellite_password: "{{ satellite.satellite_password }}"
+        satellite_organization: "rodli"
+        satellite_content_view_version_cleanup_keep: 10
