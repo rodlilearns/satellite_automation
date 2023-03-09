@@ -1,0 +1,13 @@
+---
+# tasks file for roles/content_view_version
+- name: "Ensure content view version 1.0 is in Test & Pre Prod"
+  redhat.satellite.content_view_version:
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
+    content_view: "RHEL9_Base_CV"
+    organization: "rodli"
+    version: "1.0"
+    lifecycle_environments:
+      - Library
+      - Dev

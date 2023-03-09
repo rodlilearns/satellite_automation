@@ -1,0 +1,15 @@
+---
+# tasks file for roles/sync_plans
+- name: "Create or update daily RHEL sync plan"
+  redhat.satellite.sync_plan:
+    username: "{{ satellite.satellite_username }}"
+    password: "{{ satellite.satellite_password }}"
+    server_url: "{{ satellite.satellite_server_url }}"
+    name: "Daily RHEL Sync"
+    organization: "rodli"
+    interval: "daily"
+    enabled: true
+    sync_date: "2017-01-01 00:00:00 UTC"
+    products: 
+      - Red Hat Satellite Client 6 for RHEL 9 x86_64 RPMs
+    state: present
