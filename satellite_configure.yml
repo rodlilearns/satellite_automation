@@ -39,14 +39,16 @@
 
     - content_views
 
-    - role: redhat.satellite.content_view_publish
-      vars:
-        satellite_server_url: "{{ satellite.satellite_server_url }}"
-        satellite_username: "{{ satellite.satellite_username }}"
-        satellite_password: "{{ satellite.satellite_password }}"
-        satellite_organization: "rodli"
-        satellite_content_views:
-          - RHEL9_Base_CV
+    - content_view_version
+
+    # - role: redhat.satellite.content_view_publish
+    #   vars:
+    #     satellite_server_url: "{{ satellite.satellite_server_url }}"
+    #     satellite_username: "{{ satellite.satellite_username }}"
+    #     satellite_password: "{{ satellite.satellite_password }}"
+    #     satellite_organization: "rodli"
+    #     satellite_content_views:
+    #       - RHEL9_Base_CV
 
     - role: redhat.satellite.content_view_version_cleanup
       vars:
@@ -54,4 +56,4 @@
         satellite_username: "{{ satellite.satellite_username }}"
         satellite_password: "{{ satellite.satellite_password }}"
         satellite_organization: "rodli"
-        satellite_content_view_version_cleanup_keep: 10
+        satellite_content_view_version_cleanup_keep: "{{ satellite.number_of_content_view_versions_to_keep }}"
