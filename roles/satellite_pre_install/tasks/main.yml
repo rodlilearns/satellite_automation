@@ -1,0 +1,51 @@
+---
+# tasks file for roles/satellite_pre_install
+- name: Open ports for client to Satellite communication.
+  ansible.posix.firewalld:
+    port: "{{ item }}"
+    permanent: true
+    state: disabled
+  loop: "{{ satellite.firewall_ports }}"
+
+- name: Register to a Red Hat subscription.
+  community.general.redhat_subscription:
+    state: present
+    username: "{{ redhat.rh_username}}"
+    password: "{{ redhat.rh_password }}"
+    auto_attach: true
+
+- name: Disable all unecessary repositories, and enable BaseOS, AppStream, Satellite 6.12 for RHEL 8, and Satellite Maintenance 6.12 for RHEL 8.
+  community.general.rhsm_repository:
+    name: "{{ satellite.enabled_repositories }}"
+    purge: true
+
+- name: Enable the satellite el8 module.
+  ansible.builtin.dnf:
+    name: '@satellite:el8'
+    state: present
+
+- name: Update all packages.
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest
+
+- name: Install Satellite Server packages.
+  ansible.builtin.dnf:
+    name: satellite
+    state: present
+
+- name: Install chrony package.
+  ansible.builtin.dnf:
+    name: chrony
+    state: present
+
+- name: Start and enable chronyd service.
+  ansible.builtin.service:
+    name: chronyd
+    state: started
+    enabled: true
+
+- name: Install sos package for opening service requests with Red Hat Technical Support.
+  ansible.builtin.dnf:
+    name: sos
+    state: present
