@@ -71,7 +71,7 @@ Run the playbook to configure Satellite server.
 
 ## Recommended reading
 * [Red Hat Satellite 6.12: Installing Satellite Server in a Connected Network Environment](https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/index)  
-* [Ansible Content: redhat.satellite_operations](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/)satellite_operations/  
+* [Ansible Content: redhat.satellite_operations](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite_operations/)
 * [Ansible Content: redhat.satellite](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite/)
 * [GitHub Repository: redhat.satellite_operations](https://github.com/RedHatSatellite/satellite-operations-collection)
 * [GitHub Repository: redhat.satellite](https://github.com/RedHatSatellite/satellite-ansible-collection)
