@@ -1,5 +1,18 @@
 ---
 # tasks file for roles/satellite_pre_install
+- name: Set hostname
+  ansible.builtin.hostname:
+    name: "{{ satellite.satellite_hostname }}"
+
+- name: Enable Satellite server to resolve itself
+  ansible.builtin.lineinfile:
+    path: /etc/hosts
+    regexp: '^127\.0\.0\.1'
+    line: "127.0.0.1 {{ satellite.satellite_hostname_fqdn }} {{ satellite.satellite_hostname_short }}"
+    owner: root
+    group: root
+    mode: '0644'
+
 - name: Open ports for client to Satellite communication.
   ansible.posix.firewalld:
     service: RH-Satellite-6
