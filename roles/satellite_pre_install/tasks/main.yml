@@ -2,10 +2,9 @@
 # tasks file for roles/satellite_pre_install
 - name: Open ports for client to Satellite communication.
   ansible.posix.firewalld:
-    port: "{{ item }}"
+    service: RH-Satellite-6
     permanent: true
-    state: disabled
-  loop: "{{ satellite.firewall_ports }}"
+    state: enabled
 
 - name: Register to a Red Hat subscription.
   community.general.redhat_subscription:
