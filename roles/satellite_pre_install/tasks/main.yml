@@ -19,10 +19,12 @@
     name: "{{ satellite.enabled_repositories }}"
     purge: true
 
+# The below task warns about a conflict with postgresql:10 and ruby:2.5 as these modules are set to the default module versions on RHEL8. The satellite:el8 has a dependency for modules postgresql:12 and ruby:2.7. These warnings do not cause installation process failure, hence can be ignored safely.
 - name: Enable the satellite el8 module.
   ansible.builtin.dnf:
     name: '@satellite:el8'
     state: present
+  ignore_errors: true
 
 - name: Update all packages.
   ansible.builtin.dnf:
@@ -49,3 +51,5 @@
   ansible.builtin.dnf:
     name: sos
     state: present
+...
+# Installing Satellite Server - https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/installing_server_connected_satellite
