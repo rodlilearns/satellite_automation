@@ -38,6 +38,10 @@
     state: present
   ignore_errors: true
 
+# Needs refactoring for idempotency
+- name: Enable dnf module for satellite:el8
+  ansible.builtin.command: dnf module enable satellite:el8
+
 - name: Update all packages.
   ansible.builtin.dnf:
     name: "*"
