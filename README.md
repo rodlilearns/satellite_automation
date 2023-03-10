@@ -70,8 +70,8 @@ Run the playbook to configure Satellite server.
 `$ ansible-playbook satellite_configure.yml -b --become-method sudo --become-user root -u <INSERT_USER> -K --ask-vault-pass -vvv`
 
 ## Recommended reading
-* https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/index  
-* https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite_operations/  
-* https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite/  
-* https://github.com/RedHatSatellite/satellite-operations-collection  
-* https://github.com/RedHatSatellite/satellite-ansible-collection  
+* [Red Hat Satellite 6.12: Installing Satellite Server in a Connected Network Environment](https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/index)  
+* [Ansible Content: redhat.satellite_operations](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/)satellite_operations/  
+* [Ansible Content: redhat.satellite](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite/)
+* [GitHub Repository: redhat.satellite_operations](https://github.com/RedHatSatellite/satellite-operations-collection)
+* [GitHub Repository: redhat.satellite](https://github.com/RedHatSatellite/satellite-ansible-collection)
