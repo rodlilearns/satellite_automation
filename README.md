@@ -1,5 +1,5 @@
 # satellite_automation
-A template for automating Red Hat Satellite installation and configuration.
+An example of automating Red Hat Satellite installation and configuration.
 
 ## Purpose
 
