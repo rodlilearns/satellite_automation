@@ -47,8 +47,9 @@ vault_rh_password: <INSERT_RH_PASSWORD>
 ```
 `:wq`  
 
-Configure Collection sources.
-`$ vim ansible.cfg`
+Configure Collection sources.  
+`$ vim ansible.cfg`  
+
 ```
 [galaxy]
 server_list = automation_hub, galaxy
