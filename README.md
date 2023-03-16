@@ -10,6 +10,46 @@ This project uses Ansible (a command-line I.T. automation tool written in Python
 This project was written with idempotency and consistency in mind, meaning it can be run as many times as desired, without making changes that have already been made.  
 The Ansible code is written in yaml. It is declarative, and therefore easier to understand when debugging, and can be shared with other teams for ease when communicating details is required.  
 
+## Requirements
+
+### Collection Source Configuration  
+Configure Collection sources.  
+`$ vim ansible.cfg`  
+
+```
+[galaxy]
+server_list = automation_hub, galaxy
+
+[galaxy_server.automation_hub]
+url=https://console.redhat.com/api/automation-hub/
+auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
+token=<INSERT_TOKEN>
+```
+Note: Make sure to check `console.redhat.com` for the exact Red Hat Automation Hub `url` and `auth_url` inputs, they're most likely different.  
+
+### Ansible Collections
+The required Ansible collections are in `collections/requirements.yml`.  
+
+Install required collections  
+`$ ansible-galaxy collection install -r collection/requirements.yml`  
+
+### Execution Environment Image
+
+
+### Password
+https://ansible-navigator.readthedocs.io/en/latest/faq/#how-can-i-use-a-vault-password-with-ansible-navigator
+```
+$ touch ~/.vault_password
+$ chmod 600 ~/.vault_password
+# The leading space here is necessary to keep the command out of the command history
+$  echo my_password >> ~/.vault_password
+# Link the password file into the current working directory
+$ ln ~/.vault_password .
+# Set the environment variable to the location of the file
+$ ANSIBLE_VAULT_PASSWORD_FILE=.vault_password
+$ ansible-navigator run site.yml
+```
+
 ## Implementation
 
 This project uses the `satellite_install.yml` Ansible playbook to install a Red Hat Satellite server.
@@ -76,3 +116,4 @@ Run the playbook to configure Satellite server.
 * [Ansible Content: redhat.satellite](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite/)
 * [GitHub Repository: redhat.satellite_operations](https://github.com/RedHatSatellite/satellite-operations-collection)
 * [GitHub Repository: redhat.satellite](https://github.com/RedHatSatellite/satellite-ansible-collection)
+* [Using Ansible Vault with Execution Environments](https://ansible-navigator.readthedocs.io/en/latest/faq/#how-can-i-use-a-vault-password-with-ansible-navigator)  
