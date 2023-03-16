@@ -116,4 +116,4 @@ Run the playbook to configure Satellite server.
 * [Ansible Content: redhat.satellite](https://console.redhat.com/ansible/automation-hub/repo/published/redhat/satellite/)
 * [GitHub Repository: redhat.satellite_operations](https://github.com/RedHatSatellite/satellite-operations-collection)
 * [GitHub Repository: redhat.satellite](https://github.com/RedHatSatellite/satellite-ansible-collection)
-* [Using Ansible Vault with Execution Environments](https://ansible-navigator.readthedocs.io/en/latest/faq/#how-can-i-use-a-vault-password-with-ansible-navigator)  
+* [Using Ansible Vault with ansible-navigator](https://ansible-navigator.readthedocs.io/en/latest/faq/#how-can-i-use-a-vault-password-with-ansible-navigator)  
