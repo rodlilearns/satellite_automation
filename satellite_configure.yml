@@ -1,6 +1,8 @@
 ---
 - name: Configure Red Hat Satellite
   hosts: satellite_server
+  vars:
+    ansible_become_password: "{{ lookup('env', 'ansible_become_password') }}"
   vars_files:
     - host_vars/vault.yml
     - host_vars/satellite_vars.yml
