@@ -34,10 +34,21 @@ Install required collections
 `$ ansible-galaxy collection install -r collection/requirements.yml`  
 
 ### Execution Environment Image
+Log into Red Hat container registry.
+`$ podman login registry.redhat.io`  
+Note: Make sure that you have set up two factor authentication with your Red Hat registry account. Otherwise, you will not be able to log in successfully.  
 
+Download the default container image.
+`$ ansible-navigator images --eei registry.redhat.io/ansible-automation-platform-22/ee-supported-rhel8:1.0.0-233`  
 
-### Password
-https://ansible-navigator.readthedocs.io/en/latest/faq/#how-can-i-use-a-vault-password-with-ansible-navigator
+### Credentials
+The following credentials need to be set up so that the playbook can access them within the execution environment.  
+
+#### Ansible Become Password
+Note: The leading space here is necessary to keep the command out of the command history.
+`$  export ansible_become_password=<ENTER_ANSIBLE_BECOME_PASSWORD>`
+
+#### Ansible Vault Password
 ```
 $ touch ~/.vault_password
 $ chmod 600 ~/.vault_password
@@ -49,9 +60,9 @@ $ ln ~/.vault_password .
 $ ANSIBLE_VAULT_PASSWORD_FILE=.vault_password
 $ ansible-navigator run site.yml
 ```
+https://ansible-navigator.readthedocs.io/en/latest/faq/#how-can-i-use-a-vault-password-with-ansible-navigator
 
 ## Implementation
-
 This project uses the `satellite_install.yml` Ansible playbook to install a Red Hat Satellite server.
 
 Then, the `satellite_configure.yml` Ansible playbook configures the existing Red Hat Satellite.  
@@ -64,7 +75,6 @@ The items this playbook configures include:
 6. Content Views (RHEL9_Base_CV, )
 
 ## How to use
-
 Provision a host for Satellite server.  
 
 Set up public key authentication.  
@@ -87,28 +97,15 @@ vault_rh_password: <INSERT_RH_PASSWORD>
 ```
 `:wq`  
 
-Configure Collection sources.  
-`$ vim ansible.cfg`  
-
-```
-[galaxy]
-server_list = automation_hub, galaxy
-
-[galaxy_server.automation_hub]
-url=https://console.redhat.com/api/automation-hub/
-auth_url=https://sso.redhat.com/auth/realms/redhat-external/protocol/openid-connect/token
-token=<INSERT_TOKEN>
-```
-Note: Make sure to check `console.redhat.com` for the exact Red Hat Automation Hub `url` and `auth_url` inputs, they're most likely different.  
-
-Install required collections  
-`$ ansible-galaxy collection install -r collection/requirements.yml`  
-
 Run the playbook to install Satellite server.  
 `$ ansible-playbook satellite_install.yml -b --become-method sudo --become-user root -u <INSERT_USER> -kK --ask-vault-pass -vvv`  
+or  
+`$ ansible-navigator run satellite_install.yml -m stdout --eei ee-supported-rhel8:1.0.0-233 --pp missing -penv ansible_become_password`
 
 Run the playbook to configure Satellite server.  
 `$ ansible-playbook satellite_configure.yml -b --become-method sudo --become-user root -u <INSERT_USER> -K --ask-vault-pass -vvv`
+or  
+`$ ansible-navigator run satellite_configure.yml -m stdout --eei ee-supported-rhel8:1.0.0-233 --pp missing -penv ansible_become_password`
 
 ## Recommended reading
 * [Red Hat Satellite 6.12: Installing Satellite Server in a Connected Network Environment](https://access.redhat.com/documentation/en-us/red_hat_satellite/6.12/html/installing_satellite_server_in_a_connected_network_environment/index)  
