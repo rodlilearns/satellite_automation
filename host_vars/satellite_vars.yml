@@ -18,6 +18,7 @@ satellite:
     - 9090/tcp
     - 8140/tcp
   manifest_path: /tmp/manifest.zip
+  organization: <ORGANIZATION>
   satellite_hostname_fqdn: "{{ vault_satellite_hostname_fqdn }}"
   satellite_hostname_short: "{{ vault_satellite_hostname_short }}"
   satellite_server_url: "{{ vault_satellite_server_url }}"
