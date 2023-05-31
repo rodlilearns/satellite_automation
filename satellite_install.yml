@@ -4,7 +4,8 @@
   vars:
     ansible_become_password: "{{ lookup('env', 'ansible_become_password') }}"
   vars_files:
-    host_vars/satellite_vars.yml
+    - host_vars/satellite_vars.yml
+    - host_vars/vault.yml
   roles:
     - satellite_pre_install
 
@@ -12,7 +13,7 @@
       vars:
         satellite_installer_scenario: satellite
         satellite_installer_options:
-          - '--foreman-initial-organization "rodli"'
+          - '--foreman-initial-organization "{{ satellite.organization }}"'
           - '--foreman-initial-admin-password {{ satellite.satellite_password }}'
 
     # - role: capsule_certs_generate
