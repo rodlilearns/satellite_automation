@@ -1,0 +1,179 @@
+---
+- name: Configure Disk for Red Hat Satellite Server
+  hosts: satellite_server
+  become: true
+
+  tasks:
+    - name: Create partition table sda
+      community.general.parted:
+        device: /dev/sda
+        label: gpt
+        state: present
+
+    - name: Create sda1 partition for /boot
+      community.general.parted:
+        device: /dev/sda
+        number: 1
+        flags: [boot]
+        size: 1GB
+        state: present
+
+    - name: Create sda2 partition for /, SWAP, /usr, /tmp, /var, /opt, /opt/puppetlabs, /home
+      community.general.parted:
+        device: /dev/sda
+        number: 2
+        flags: [lvm]
+        size: 1023GB
+        state: present
+
+    - name: Create physical volume (pv)
+      community.general.lvm_pv:
+        pvs: /dev/sda2
+        state: present
+
+    - name: Create volume group (vg) vg_satellite
+      community.general.lvg:
+        vg: vg_satellite
+        pvs: /dev/sda2
+        state: present
+
+    - name: Create logical volumes (lv) lv_root
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_root
+        size: 4G
+        state: present
+
+    - name: Create logical volumes (lv) lv_swap
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_swap
+        size: 4G
+        state: present
+
+    - name: Create logical volumes (lv) lv_usr
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_usr
+        size: 5G
+        state: present
+
+    - name: Create logical volumes (lv) lv_tmp
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_tmp
+        size: 5G
+        state: present
+
+    - name: Create logical volumes (lv) lv_var
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_var
+        size: 10G
+        state: present
+
+    - name: Create logical volumes (lv) lv_opt
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_opt
+        size: 4G
+        state: present
+
+    - name: Create logical volumes (lv) lv_opt_puppetlabs
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_opt_puppetlabs
+        size: 500M
+        state: present
+
+    - name: Create logical volumes (lv) lv_home
+      community.general.lvol:
+        vg: vg_satellite
+        lv: lv_home
+        size: 1G
+        state: present
+
+    - name: Create partition table sdb
+      community.general.parted:
+        device: /dev/sdb
+        label: gpt
+        state: present
+
+    - name: Create sdb1 partition for /var/log, /var/lib/pgsql, /var/lib/pulp, /var/lib/qpidd
+      community.general.parted:
+        device: /dev/sdb
+        number: 1
+        flags: [lvm]
+        size: 600GB
+        state: present
+
+    - name: Create physical volume (pv)
+      community.general.lvm_pv:
+        pvs: /dev/sdb1
+        state: present
+
+    - name: Create volume group (vg) vg_satellite_app
+      community.general.lvg:
+        vg: vg_satellite_app
+        pvs: /dev/sdb1
+        state: present
+
+    - name: Create logical volumes (lv) lv_var_log
+      community.general.lvol:
+        vg: vg_satellite_app
+        lv: lv_var_log
+        size: 10G
+        state: present
+
+    - name: Create logical volumes (lv) lv_var_lib_pgsql
+      community.general.lvol:
+        vg: vg_satellite_app
+        lv: lv_var_lib_pgsql
+        size: 20G
+        state: present
+
+    - name: Create logical volumes (lv) lv_var_lib_pulp
+      community.general.lvol:
+        vg: vg_satellite_app
+        lv: lv_var_lib_pulp
+        size: 300G
+        state: present
+
+    - name: Create logical volumes (lv) lv_var_lib_qpidd
+      community.general.lvol:
+        vg: vg_satellite_app
+        lv: lv_var_lib_qpidd
+        size: 20G
+        state: present
+
+    - name: Create partition table sdc
+      community.general.parted:
+        device: /dev/sdc
+        label: gpt
+        state: present
+
+    - name: Create sdc1 partition for file transfer mount point
+      community.general.parted:
+        device: /dev/sdc
+        number: 1
+        flags: [lvm]
+        size: 1100GB
+        state: present
+
+    - name: Create physical volume (pv)
+      community.general.lvm_pv:
+        pvs: /dev/sdc1
+        state: present
+
+    - name: Create volume group (vg) vg_satellite_file_transfer
+      community.general.lvg:
+        vg: vg_satellite_file_transfer
+        pvs: /dev/sdc1
+        state: present
+
+    - name: Create logical volumes (lv) lv_file_transfer
+      community.general.lvol:
+        vg: vg_satellite_file_transfer
+        lv: lv_file_transfer
+        size: 1000G
+        state: present
