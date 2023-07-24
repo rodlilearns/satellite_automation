@@ -1,0 +1,100 @@
+---
+- name: Inter-Satellite Synchronisation (ISS)
+  hosts: connected_satellite
+  tasks:
+
+# Change download policies to immediate.
+
+    - name: Get the current value of the download policy setting for Red Hat repositories.
+      ansible.builtin.command: hammer settings get --name default_redhat_download_policy
+      register: result_setting_default_redhat_download_policy
+      changed_when: false
+      
+    - name: Set the download policy setting for repositories to immediate if not already set.
+      ansible.builtin.command: hammer settings set --name default_redhat_download_policy --value immediate
+      when: result_setting_default_redhat_download_policy.stdout.find('immediate') == -1
+      
+    - name: Get the current value of the download policy for non Red Hat repositories.
+      ansible.builtin.command: hammer settings get --name default_download_policy
+      register: result_setting_default_download_policy
+      changed_when: false
+
+    - name: Set the download policy setting for non Red Hat repositories to immediate if not already set.
+      ansible.builtin.command: hammer settings set --name default_download_policy --value immediate
+      when: result_setting_default_download_policy.stdout.find('immediate') == -1
+
+# Enable the content you want to synchronise.
+
+    - name: Check if the Red Hat Enterprise Linux 8 for x86_64 - BaseOS RPMs repository is enabled.
+      ansible.builtin.command: hammer repository info --name "Red Hat Enterprise Linux 8 for x86_64 - BaseOS RPMs" | grep -i enabled
+      register: result_repository_rhel8_baseos_rpms
+      changed_when: false
+
+    - name: Enable the Red Hat Enterprise Linux 8 for x86_64 - BaseOS RPMs repository if not already enabled.
+      ansible.builtin.command: hammer repository enable --name "Red Hat Enterprise Linux 8 for x86_64 - BaseOS RPMs"
+      when: "'Red Hat Enterprise Linux 8 BaseOS (RPMs)' not in result_repository_rhel8_baseos_rpms.stdout"
+
+    - name: Check if the Red Hat Enterprise Linux 8 for x86_64 - AppStream RPMs repository is enabled.
+      ansible.builtin.command: hammer repository info --name "Red Hat Enterprise Linux 8 for x86_64 - AppStream RPMs" | grep -i enabled
+      register: result_repository_rhel8_appstream_rpms
+      changed_when: false
+
+    - name: Enable the Red Hat Enterprise Linux 8 for x86_64 - AppStream RPMs repository if not already enabled.
+      ansible.builtin.command: hammer repository enable --name "Red Hat Enterprise Linux 8 for x86_64 - AppStream RPMs"
+      when: "'Red Hat Enterprise Linux 8 AppStream (RPMs)' not in result_repository_rhel8_appstream_rpms.stdout"
+
+    - name: Check if Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs repository is enabled.
+      ansible.builtin.command: hammer repository info --name "Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs" | grep -i enabled
+      register: result_repository_rhel9_baseos_rpms
+      changed_when: false
+
+    - name: Enable the Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs repository if not already enabled.
+      ansible.builtin.command: hammer repository enable --name "Red Hat Enterprise Linux 9 for x86_64 - BaseOS RPMs"
+      when: "'Red Hat Enterprise Linux 9 BaseOS (RPMs)' not in result_repository_rhel9_baseos_rpms.stdout"
+
+    - name: Check if Red Hat Enterprise Linux 9 for x86_64 - AppStream RPMs repository is enabled.
+      ansible.builtin.command: hammer repository info --name "Red Hat Enterprise Linux 9 for x86_64 - AppStream RPMs" | grep -i enabled
+      register: result_repository_rhel9_appstream_rpms
+      changed_when: false
+
+    - name: Enable the Red Hat Enterprise Linux 9 for x86_64 - AppStream RPMs repository if not already enabled.
+      ansible.builtin.command: hammer repository enable --name "Red Hat Enterprise Linux 9 for x86_64 - AppStream RPMs"
+      when: "'Red Hat Enterprise Linux 9 AppStream (RPMs)' not in result_repository_rhel9_appstream_rpms.stdout"
+
+    - name: Check if Satellite Capsule 6.13 for RHEL 8 x86_64 RPMs repository is enabled.
+      ansible.builtin.command: hammer repository info --name "Satellite Capsule 6.13 for RHEL 8 x86_64 RPMs" | grep -i enabled
+      register: result_repository_satellite_capsule_6_13_rhel8_rpms
+      changed_when: false
+
+    - name: Enable the Satellite Capsule 6.13 for RHEL 8 x86_64 RPMs repository if not already enabled.
+      ansible.builtin.command: hammer repository enable --name "Satellite Capsule 6.13 for RHEL 8 x86_64 RPMs"
+      when: "'Satellite Capsule 6.13 for RHEL 8 x86_64 RPMs' not in result_repository_satellite_capsule_6_13_rhel8_rpms.stdout"
+
+# Synchronise the enabled content
+    - name: Get a list of all repositories under the organisation "{{ org }}".
+      ansible.builtin.shell: hammer repository list --organization "{{ org }}" --format csv | tail -n +2 | awk -F, '{print $1}'
+      register: result_repository_list
+      changed_when: false
+
+    - name: Synchronise all repositories under the organisation "{{ org }}".
+      ansible.builtin.command: hammer repository synchronize --name "{{ item }}"
+      loop: "{{ result_repository_list.stdout_lines }}"
+      changed_when: "'changed' in item.stderr"
+      ignore_errors: true # Ignore errors as some repositories may not require synchronisation.
+
+# Export Library
+    - name: Check if content library is already exported
+      ansible.builtin.command: hammer content-export list --organisation="{{ org }}"
+      register: result_export_list
+      changed_when: false
+      failed_when: false
+
+    - name: Export the entire content library
+      ansible.builtin.command: hammer content-export library --organization="{{ org }}"
+      when: export_check.stdout_lines | length == 0
+
+    - name: Export incremental library
+      ansible.builtin.command: hammer content-export incremental library --organization="{{ org }}"
+      when: not (export_check.stdout_lines | length == 0) and not ansible_check_mode
+...
+# https://access.redhat.com/documentation/en-us/red_hat_satellite/6.13/html-single/managing_content/index#Using_Upstream_Server_as_a_Content_Store_content-management
